@@ -1,0 +1,89 @@
+# Local-only secrets / env files (NEVER commit)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Python / venv
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+.envrc
+
+# Packaging / build
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Test / type / lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Caches
+.matplotlib_cache/
+.mpl_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# --- ML / 本仓库产物（体积大或可重建，默认不提交）---
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+tb_logs/
+runs/
+wandb/
+mlruns/
+
+# 训练与脚本日志
+*.log
+
+# 原始业务表（敏感 / 体量大；README 要求本地放置）
+data/input_output_tables/*.csv
+
+# 对齐后的宽表、血缘、metadata 与 LLM 产物（可重建 / 可能含业务上下文）
+data/aligned/*.csv
+data/aligned/*.json
+data/aligned/*.jsonl
+
+# LLM / OpenAI 兼容接口缓存（可重建，且可能含请求上下文）
+data/aligned/llm_api_cache*.jsonl
+
+# 实验结果、过程文稿、组会稿、人工评测样本（不作为开源交付内容）
+experiments/
+
+# 技术报告 / 路线草稿 / 二次整理稿：已并入根 README，不单独上传
+code/TECHNICAL_REPORT.md
+phase.md
+docs/
+
+# 实验生成图（可选：若希望图也进仓库，删掉下一行）
+experiments/figures/
+
+# 保留目录结构的占位文件
+!data/
+!data/aligned/
+!data/aligned/.gitkeep
+!data/input_output_tables/
+!data/input_output_tables/.gitkeep

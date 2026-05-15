@@ -1,0 +1,6 @@
+numpy>=2.0
+pandas>=2.3
+torch>=2.8
+matplotlib>=3.9
+tqdm>=4.67
+tensorboard>=2.20
