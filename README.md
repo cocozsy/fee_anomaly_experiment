@@ -112,7 +112,6 @@ LLM prompt 采用三段式：
 ```text
 .
 ├── README.md
-├── phase.md
 ├── run_monitor.sh
 ├── code/
 │   ├── build_aligned_dataset.py
@@ -126,7 +125,6 @@ LLM prompt 采用三段式：
 │   ├── run_horizon_eval.py
 │   ├── compare_phase5_mock_vs_openai.py
 │   ├── analyze_phase5_pilot.py
-│   └── TECHNICAL_REPORT.md
 ├── data/
 │   └── aligned/
 │       ├── aligned_customer_month*.csv
@@ -145,19 +143,7 @@ LLM prompt 采用三段式：
 │   ├── phase5_*.md/json/csv
 │   ├── phase6_openai2500_train_acceptance.md
 │   ├── group_meeting_phase6_slides.md
-│   └── paper_research_positioning.md
-└── docs/
-    └── project_reorganized_by_template.md
 ```
-
-说明：
-
-- `README.md`：原始最小运行说明。
-- `phase.md`：8 阶段路线图，包含 E2P、i2VAE、HORIZON 三条思想来源。
-- `code/TECHNICAL_REPORT.md`：偏工程细节的技术报告。
-- `experiments/paper_research_positioning.md`：偏论文叙事和研究定位。
-- `experiments/group_meeting_phase6_slides.md`：偏组会汇报材料。
-- 本文档：按 PDF 模板重排后的项目总说明。
 
 ## 4. 输入说明
 
@@ -232,18 +218,6 @@ LLM 教师构建时读取客户-月表中的环境列与事件列，生成 promp
 | `training_curves.png` | 训练曲线              |
 | `tb_logs/`            | TensorBoard 日志    |
 
-
-### 5.3 报告输出
-
-
-| 文件                                                  | 说明                      |
-| --------------------------------------------------- | ----------------------- |
-| `experiments/results.md`                            | Stage 1-3 与解耦实验汇总       |
-| `experiments/horizon_eval_d1_d3c_rerun.md`          | D1/D3-C 后 HORIZON 评估    |
-| `experiments/phase5_openai2500_train_acceptance.md` | 真实 LLM 2500 merge 后训练验收 |
-| `experiments/phase5_openai_2500_vs_mock_noleak.md`  | OpenAI vs 无泄漏 mock 对比   |
-| `experiments/phase6_openai2500_train_acceptance.md` | 阶段 6 模型结构验收             |
-| `experiments/paper_research_positioning.md`         | 论文叙事与研究定位               |
 
 
 ## 6. 推理流程
