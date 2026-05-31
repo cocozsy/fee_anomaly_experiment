@@ -1,7 +1,5 @@
 # 电费异常原因分析与教师-学生蒸馏项目整理版
 
-> 本文参考 `/Users/coco/Downloads/README.pdf` 的章节模板进行重组。PDF 模板目录为：项目概述、系统架构、项目结构、输入说明、输出说明、推理流程、电费守恒校验机制、模型与训练、环境配置、快速开始。
-
 ## 1. 项目概述
 
 本项目面向“客户-月”粒度的电费异常分析：输入多张电力业务表，输出异常风险、原因概率和可解释提示，并通过教师-学生蒸馏把训练侧的大模型/规则/环境知识压缩到可部署的小模型中。
@@ -38,6 +36,8 @@ flowchart LR
   H --> I
   I --> J["评估与报告<br/>train_report.json / experiments/*.md"]
 ```
+
+
 
 ### 2.1 数据与标签层
 
@@ -187,12 +187,14 @@ data/input_output_tables/
 
 当前仓库已有多版对齐产物，常用输入如下：
 
-| 文件 | 用途 |
-| --- | --- |
-| `data/aligned/aligned_customer_month.csv` | 原始客户-月对齐表 |
-| `data/aligned/aligned_customer_month_decoupled.csv` | 标签/规则解耦扰动后的对齐表 |
-| `data/aligned/aligned_customer_month_decoupled_env_full_d3c.csv` | 防泄漏 D3-C 环境与事件特征表 |
+
+| 文件                                                                                           | 用途                        |
+| -------------------------------------------------------------------------------------------- | ------------------------- |
+| `data/aligned/aligned_customer_month.csv`                                                    | 原始客户-月对齐表                 |
+| `data/aligned/aligned_customer_month_decoupled.csv`                                          | 标签/规则解耦扰动后的对齐表            |
+| `data/aligned/aligned_customer_month_decoupled_env_full_d3c.csv`                             | 防泄漏 D3-C 环境与事件特征表         |
 | `data/aligned/aligned_customer_month_decoupled_env_full_d3c_merged_llm_openai_pilot2500.csv` | 合并 2500 条真实 LLM 特征后的全量训练表 |
+
 
 ### 4.3 LLM 输入
 
@@ -207,36 +209,42 @@ LLM 教师构建时读取客户-月表中的环境列与事件列，生成 promp
 
 ### 5.1 数据输出
 
-| 输出 | 说明 |
-| --- | --- |
-| `data/aligned/aligned_customer_month.csv` | 客户-月主样本 |
-| `data/aligned/*_metadata.json` | 数据血缘、行数、特征组、构建参数 |
-| `data/aligned/aligned_customer_month_llm_features*.csv` | LLM 教师特征 |
-| `data/aligned/*_merged_llm*.csv` | 合并 LLM 特征后的训练表 |
+
+| 输出                                                      | 说明               |
+| ------------------------------------------------------- | ---------------- |
+| `data/aligned/aligned_customer_month.csv`               | 客户-月主样本          |
+| `data/aligned/*_metadata.json`                          | 数据血缘、行数、特征组、构建参数 |
+| `data/aligned/aligned_customer_month_llm_features*.csv` | LLM 教师特征         |
+| `data/aligned/*_merged_llm*.csv`                        | 合并 LLM 特征后的训练表   |
+
 
 ### 5.2 训练输出
 
 每次训练输出目录通常位于 `checkpoints/<run_name>/`：
 
-| 文件 | 说明 |
-| --- | --- |
-| `teacher.pt` | 教师模型权重 |
-| `student.pt` | 学生模型权重 |
-| `train_report.json` | 训练配置、切分信息、教师/学生指标 |
-| `metrics.jsonl` | epoch 级训练和验证日志 |
-| `training_curves.png` | 训练曲线 |
-| `tb_logs/` | TensorBoard 日志 |
+
+| 文件                    | 说明                |
+| --------------------- | ----------------- |
+| `teacher.pt`          | 教师模型权重            |
+| `student.pt`          | 学生模型权重            |
+| `train_report.json`   | 训练配置、切分信息、教师/学生指标 |
+| `metrics.jsonl`       | epoch 级训练和验证日志    |
+| `training_curves.png` | 训练曲线              |
+| `tb_logs/`            | TensorBoard 日志    |
+
 
 ### 5.3 报告输出
 
-| 文件 | 说明 |
-| --- | --- |
-| `experiments/results.md` | Stage 1-3 与解耦实验汇总 |
-| `experiments/horizon_eval_d1_d3c_rerun.md` | D1/D3-C 后 HORIZON 评估 |
+
+| 文件                                                  | 说明                      |
+| --------------------------------------------------- | ----------------------- |
+| `experiments/results.md`                            | Stage 1-3 与解耦实验汇总       |
+| `experiments/horizon_eval_d1_d3c_rerun.md`          | D1/D3-C 后 HORIZON 评估    |
 | `experiments/phase5_openai2500_train_acceptance.md` | 真实 LLM 2500 merge 后训练验收 |
-| `experiments/phase5_openai_2500_vs_mock_noleak.md` | OpenAI vs 无泄漏 mock 对比 |
-| `experiments/phase6_openai2500_train_acceptance.md` | 阶段 6 模型结构验收 |
-| `experiments/paper_research_positioning.md` | 论文叙事与研究定位 |
+| `experiments/phase5_openai_2500_vs_mock_noleak.md`  | OpenAI vs 无泄漏 mock 对比   |
+| `experiments/phase6_openai2500_train_acceptance.md` | 阶段 6 模型结构验收             |
+| `experiments/paper_research_positioning.md`         | 论文叙事与研究定位               |
+
 
 ## 6. 推理流程
 
@@ -248,63 +256,15 @@ LLM 教师构建时读取客户-月表中的环境列与事件列，生成 promp
 4. 构造稀疏事件列。
 5. 使用学生模型 `student.pt` 做低延迟推理。
 6. 输出：
-   - 异常分数；
-   - Top 原因概率；
-   - 关键证据字段，如费用环比、同群偏离、单价偏差、自身历史偏离、抄表异常等。
+  - 异常分数；
+  - Top 原因概率；
+  - 关键证据字段，如费用环比、同群偏离、单价偏差、自身历史偏离、抄表异常等。
 
 训练阶段可以调用 LLM，推理阶段默认不调用 LLM。LLM 的作用被离线蒸馏到教师视图、学生 latent 和 prefix 对齐目标中。
 
-## 7. 电费守恒校验机制
+## 7. 模型与训练
 
-本项目没有单独命名为“电费守恒校验”的脚本，但已经在数据构建和特征工程中落了若干等价的费用一致性检查点，可按模板统一归纳为“电费守恒/一致性校验机制”。
-
-### 7.1 单价一致性
-
-在 `build_aligned_dataset.py` 中构造：
-
-- `unit_price_est = 电量电费 / 周期结算电量`
-- `expected_unit_price = 基准费率 + 附加费率`
-- `unit_price_dev = unit_price_est - expected_unit_price`
-
-含义：若结算电量、电量电费和电价表一致，估计单价应接近期望单价；偏差过大可作为电价、计费或档案异常的证据。
-
-### 7.2 费用与用量环比
-
-构造：
-
-- `fee_mom_ratio`
-- `fee_mom_diff`
-- `energy_mom_ratio`
-- `energy_mom_diff`
-
-含义：费用突增若没有对应电量变化、费率变化或客户环境变化支撑，可能是异常候选。
-
-### 7.3 抄表与结算一致性
-
-抄表表聚合得到：
-
-- `read_energy_sum`
-- `settle_energy_sum`
-- `read_has_abn`
-- `abnormal_event_count`
-- `abnormal_meter_count`
-
-含义：抄见电量、结算电量、抄表异常标记和异常事件之间可以形成互证。
-
-### 7.4 同群/自身基线一致性
-
-环境特征中进一步构造：
-
-- `env_peer_fee_vs_peer_z`
-- `env_peer_energy_vs_peer_z`
-- `env_peer_unit_price_dev_vs_peer_z`
-- `env_unit_price_dev_vs_self_history`
-
-含义：将“守恒”从单条账单内扩展为“相对自身历史与同群基线是否合理”。D3-C 版本使用上一月同群统计，避免当前月同群标签污染。
-
-## 8. 模型与训练
-
-### 8.1 教师模型
+### 7.1 教师模型
 
 实现文件：`code/models.py`
 
@@ -323,7 +283,7 @@ LLM 教师构建时读取客户-月表中的环境列与事件列，生成 promp
 
 教师目标：在训练侧吃满规则、环境、类别和 LLM 信号，作为学生的蒸馏上界。
 
-### 8.2 学生模型
+### 7.2 学生模型
 
 实现文件：`code/models.py`
 
@@ -349,7 +309,7 @@ student_alpha_prefix = 0.5
 student_prefix_dim = 16
 ```
 
-### 8.3 损失函数
+### 7.3 损失函数
 
 学生总损失：
 
@@ -374,17 +334,19 @@ L_total =
 - `L_prefix`：学生 `prefix_proj(z)` 与真实 LLM prefix 的掩码 MSE/cosine 对齐。
 - `L_sparse`：SparseGate 稀疏正则。
 
-### 8.4 已有实验结果摘要
+### 7.4 已有实验结果摘要
 
 #### Stage 1-3：环境与事件特征
 
 在原始非解耦管线中：
 
-| 阶段 | 学生 F1 变化 | 学生 Recall 变化 | 结论 |
-| --- | --- | --- | --- |
-| Stage 1 `env_self_v1` | 0.890027 -> 0.891834 | 0.803591 -> 0.805223 | 自身漂移小幅增益 |
-| Stage 2 `env_full_v1` | 0.891834 -> 0.893501 | 0.805223 -> 0.807943 | 同群/电价继续小幅提升 |
-| Stage 3 `env_stage3_v1` | 0.893501 -> 0.927028 | - | 稀疏事件显著提升，但暴露潜在 shortcut |
+
+| 阶段                      | 学生 F1 变化             | 学生 Recall 变化         | 结论                      |
+| ----------------------- | -------------------- | -------------------- | ----------------------- |
+| Stage 1 `env_self_v1`   | 0.890027 -> 0.891834 | 0.803591 -> 0.805223 | 自身漂移小幅增益                |
+| Stage 2 `env_full_v1`   | 0.891834 -> 0.893501 | 0.805223 -> 0.807943 | 同群/电价继续小幅提升             |
+| Stage 3 `env_stage3_v1` | 0.893501 -> 0.927028 | -                    | 稀疏事件显著提升，但暴露潜在 shortcut |
+
 
 解耦与 D1 屏蔽后：
 
@@ -396,37 +358,43 @@ L_total =
 
 D1/D3-C rerun 的代表结果：
 
-| mode | teacher_f1 | student_f1 | student_auprc | 说明 |
-| --- | ---: | ---: | ---: | --- |
-| temporal | 0.9797 | 0.8518 | 0.8463 | 时间外推基本盘 |
-| cold_start | 0.9753 | 0.8484 | 0.8648 | 未见客户 |
-| cross_domain_industry | 0.9692 | 0.4266 | 0.4161 | 最能暴露学生跨域短板 |
-| cross_domain_voltage | 0.4088 | 0.1681 | 0.9516 | 当前切分指标形态异常，需谨慎解释 |
-| tariff_shift | 0.9387 | 0.0188 | 0.2272 | 费率漂移极难 |
+
+| mode                  | teacher_f1 | student_f1 | student_auprc | 说明               |
+| --------------------- | ---------- | ---------- | ------------- | ---------------- |
+| temporal              | 0.9797     | 0.8518     | 0.8463        | 时间外推基本盘          |
+| cold_start            | 0.9753     | 0.8484     | 0.8648        | 未见客户             |
+| cross_domain_industry | 0.9692     | 0.4266     | 0.4161        | 最能暴露学生跨域短板       |
+| cross_domain_voltage  | 0.4088     | 0.1681     | 0.9516        | 当前切分指标形态异常，需谨慎解释 |
+| tariff_shift          | 0.9387     | 0.0188     | 0.2272        | 费率漂移极难           |
+
 
 #### Stage 5：真实 LLM 2500 merge
 
 对比全表 mock LLM 基线，OpenAI 2500 merge 后：
 
-| 切分 | 学生基线 F1 | OpenAI2500 F1 | 结论 |
-| --- | ---: | ---: | --- |
-| temporal | 0.8507 | 0.8511 | 基本持平 |
-| cold_start | 0.8477 | 0.8500 | 略升 |
-| cross_domain_industry | 0.4077 | 0.4293 | 跨域学生提升 |
+
+| 切分                    | 学生基线 F1 | OpenAI2500 F1 | 结论     |
+| --------------------- | ------- | ------------- | ------ |
+| temporal              | 0.8507  | 0.8511        | 基本持平   |
+| cold_start            | 0.8477  | 0.8500        | 略升     |
+| cross_domain_industry | 0.4077  | 0.4293        | 跨域学生提升 |
+
 
 #### Stage 6：Env Encoder + latent KL + prefix 对齐
 
 与 Stage 5 学生相比：
 
-| 切分 | Stage 5 F1 | Stage 6 F1 | AUPRC 变化 |
-| --- | ---: | ---: | --- |
-| temporal | 0.8511 | 0.8508 | 0.8459 -> 0.8457 |
-| cold_start | 0.8500 | 0.8531 | 0.8644 -> 0.8654 |
-| cross_domain_industry | 0.4293 | 0.5158 | 0.4109 -> 0.5754 |
+
+| 切分                    | Stage 5 F1 | Stage 6 F1 | AUPRC 变化         |
+| --------------------- | ---------- | ---------- | ---------------- |
+| temporal              | 0.8511     | 0.8508     | 0.8459 -> 0.8457 |
+| cold_start            | 0.8500     | 0.8531     | 0.8644 -> 0.8654 |
+| cross_domain_industry | 0.4293     | 0.5158     | 0.4109 -> 0.5754 |
+
 
 核心结论：阶段 6 在 temporal 上不退化，在 cold_start 上小幅提升，在最困难的 cross_domain_industry 上显著提升，说明环境分支、latent 容器和 prefix 对齐对跨域鲁棒性有实际价值。
 
-## 9. 环境配置
+## 8. 环境配置
 
 项目默认使用本地 `.venv`：
 
@@ -449,14 +417,6 @@ D1/D3-C rerun 的代表结果：
 source scripts/load_env.sh
 ```
 
-常见变量：
-
-```text
-OPENAI_API_KEY
-OPENAI_BASE_URL
-OPENAI_MODEL
-```
-
 训练监控：
 
 ```bash
@@ -469,9 +429,9 @@ TensorBoard：
 .venv/bin/tensorboard --logdir checkpoints/env_self_v1/tb_logs --port 6006
 ```
 
-## 10. 快速开始
+## 9. 快速开始
 
-### 10.1 构建客户-月对齐表
+### 9.1 构建客户-月对齐表
 
 ```bash
 .venv/bin/python code/build_aligned_dataset.py \
@@ -480,7 +440,7 @@ TensorBoard：
   --output_meta data/aligned/aligned_metadata.json
 ```
 
-### 10.2 构建环境与事件特征
+### 9.2 构建环境与事件特征
 
 只构建 Stage 1 自身漂移：
 
@@ -502,7 +462,7 @@ TensorBoard：
   --feature_scope full
 ```
 
-### 10.3 构建 LLM 教师特征
+### 9.3 构建 LLM 教师特征
 
 mock 链路：
 
@@ -528,7 +488,7 @@ source scripts/load_env.sh
   --concurrency 8
 ```
 
-### 10.4 合并 LLM 特征
+### 9.4 合并 LLM 特征
 
 ```bash
 .venv/bin/python code/merge_llm_features_into_aligned.py \
@@ -537,7 +497,7 @@ source scripts/load_env.sh
   --output_csv data/aligned/aligned_customer_month_decoupled_env_full_d3c_merged_llm_openai.csv
 ```
 
-### 10.5 训练 Stage 6 学生
+### 9.5 训练 Stage 6 学生
 
 ```bash
 PYTHONPATH=code .venv/bin/python code/train_distill.py \
@@ -553,7 +513,7 @@ PYTHONPATH=code .venv/bin/python code/train_distill.py \
   --seed 42
 ```
 
-### 10.6 HORIZON 评估
+### 9.6 HORIZON 评估
 
 ```bash
 PYTHONPATH=code .venv/bin/python code/run_horizon_eval.py \
@@ -563,18 +523,3 @@ PYTHONPATH=code .venv/bin/python code/run_horizon_eval.py \
   --seed 42
 ```
 
-## 11. 当前结论与下一步
-
-当前最清晰的结论是：
-
-1. 纯规则/事件特征很容易在合成数据中带来虚高，必须做标签-规则解耦和学生反泄漏屏蔽。
-2. LLM 真实特征在 2500 子集上比无泄漏 mock 有更好的排序、校准和 prefix 几何质量。
-3. Stage 6 的学生结构在跨行业 OOD 上带来明显收益，是目前最值得作为论文主结果的方向。
-4. 教师全表 F1 接近饱和，单看全表教师指标不够，需要同时看 LLM 覆盖子集、AUPRC、校准、prefix 对齐损失和跨域学生指标。
-
-建议下一步：
-
-1. 做单变量烧蚀：`--use_env_view`、`--student_alpha_prefix`、`--student_latent_dim`、`--student_alpha_kl`。
-2. 补 latent 可视化：t-SNE/UMAP、linear probe、CKA 或 prefix 相似度。
-3. 扩大 LLM 覆盖或改成按行业/标签分层抽样的 pilot，避免 cross_domain test 覆盖为 0。
-4. 推进 Stage 7：在学生 latent 上加入 reconstruction 或同群伪样本生成，真正兑现 i2VAE 风格长尾增强。
